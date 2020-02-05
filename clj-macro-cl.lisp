@@ -88,3 +88,31 @@
 (defmacro if-not (test then else)
   `(if ,test ,else ,then))
 
+;; and
+(defmacro my-and (&rest exprs)
+  (if exprs
+      (destructuring-bind (e . exprs) exprs
+	(let ((tmp-sym (gensym "tmp")))
+	  `(let ((,tmp-sym ,e)) ;; avoid evaluating twice
+	     (if ,tmp-sym
+		 (my-and ,@exprs)
+		 nil))))
+      t))
+
+(comment
+  (mac (my-and t t t nil))
+  ;; check
+  (my-and (progn (print 1) t)
+	  (progn (print 2) t))
+  (my-and))
+
+;; or
+(defmacro my-or (&rest exprs)
+  (if exprs
+      (destructuring-bind (e . exprs) exprs
+	(let ((tmp-sym (gensym "tmp")))
+	  `(let ((,tmp-sym ,e)) ;; avoid evaluating twice
+	     (if ,tmp-sym
+		 t
+		 (my-or ,@exprs)))))
+      t))
