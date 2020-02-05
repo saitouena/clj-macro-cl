@@ -83,3 +83,8 @@
 	    (setq x res)
 	    res))))
   (force (delay 1)))
+
+;; if-not
+(defmacro if-not (test then else)
+  `(if ,test ,else ,then))
+
