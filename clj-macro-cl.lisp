@@ -42,3 +42,44 @@
   (nil 1)
   (nil 2)
   (t 3))
+
+;; delay
+(defmacro delay (x)
+  (let ((cache-sym (gensym "cache"))
+	(called?-sym (gensym "called?")))
+    `(let ((,cache-sym nil)
+	   (,called?-sym nil))
+       (lambda ()
+	 (if ,called?-sym
+	     ,cache-sym
+	     (let ((res ,x))
+	       (setq ,called?-sym t)
+	       (setq ,cache-sym res)
+	       res))))))
+
+(defun force (delayed)
+  (funcall delayed))
+
+(comment
+  ;; playground
+  (mac (delay (+ 1 2)))
+  (force (delay (+ 1 2)))
+
+  (let ((print1-and-return-3-delayed (delay (progn
+					      (print 1)
+					      3))))
+    (force print1-and-return-3-delayed)
+    (force print1-and-return-3-delayed)
+    (force print1-and-return-3-delayed))
+
+  ;; sketch
+  (let ((x nil)
+	(called? nil))
+    (lambda ()
+      (if called?
+	  x
+	  (let ((res expr))
+	    (setq called? t)
+	    (setq x res)
+	    res))))
+  (force (delay 1)))
