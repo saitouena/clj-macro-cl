@@ -2,6 +2,9 @@
 (defmacro mac (expr)
   `(pprint (macroexpand-1 ',expr)))
 
+;; comment
+(defmacro comment (&body body))
+
 ;; when
 (defmacro my-when (test &body body)
   `(if ,test
