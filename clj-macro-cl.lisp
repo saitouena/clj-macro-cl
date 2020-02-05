@@ -116,3 +116,27 @@
 		 t
 		 (my-or ,@exprs)))))
       t))
+
+;; ->
+(defmacro -> (x &rest forms)
+  (labels ((recur (x forms)
+	     (if (not forms)
+		 x
+		 (let* ((f (car forms))
+			(threaded (if (listp f)
+				      `(,(car f) ,x ,@(cdr f))
+				      (list f x))))
+		   (recur threaded (cdr forms))))))
+    (recur x forms)))
+
+;; ->>
+(defmacro ->> (x &rest forms)
+  (labels ((recur (x forms)
+	     (if (not forms)
+		 x
+		 (let* ((f (car forms))
+			(threaded (if (listp f)
+				      `(,@f ,x)
+				      (list f x))))
+		   (recur threaded (cdr forms))))))
+    (recur x forms)))
