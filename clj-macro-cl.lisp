@@ -131,3 +131,51 @@
 				      (list f x))))
 		   (recur threaded (cdr forms))))))
     (recur x forms)))
+
+;; cons-stream
+;; https://sicp.iijlab.net/fulltext/x351.html
+(defmacro cons-stream (a b)
+  `(cons ,a (delay ,b)))
+
+(defun stream-car (stream) (car stream))
+
+(defun stream-cdr (stream) (force (cdr stream)))
+
+(defvar the-empty-stream nil)
+
+(defun infinite-stream (x)
+  (cons-stream x (infinite-stream x)))
+
+(defun stream-take (n stream)
+  (if (= n 0)
+      nil
+      (cons (stream-car stream) (stream-take (- n 1) (stream-cdr stream)))))
+
+(stream-take 1000 (infinite-stream 10))
+
+
+(comment
+  (defmacro delay (x)
+    `(lambda () ,x))
+  (defun force (delayed)
+    (funcall delayed)))
+
+(comment
+  ;; playground
+ (mac (delay (+ 1 2)))
+ (setq x (delay (+ 1 2)))
+ x
+ (force x)
+ (setq y (delay (progn
+                  (print 1)
+                  (print 2))))
+ (force y)
+ (force (delay (+ 1 2)))
+
+  (let ((print1-and-return-3-delayed (delay (progn
+					      (print 1)
+                                              3))))
+    (force print1-and-return-3-delayed)
+    (force print1-and-return-3-delayed)
+    (force print1-and-return-3-delayed)))
+
