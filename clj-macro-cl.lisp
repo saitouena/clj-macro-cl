@@ -179,3 +179,22 @@
     (force print1-and-return-3-delayed)
     (force print1-and-return-3-delayed)))
 
+;; assert-args (macro helper)
+;; https://github.com/clojure/clojure/blob/master/src/clj/clojure/core.clj#L1832
+(defmacro assert-args (&rest pairs)
+  (assert (evenp (length pairs)) (pairs))
+  (when pairs
+    (destructuring-bind (test msg . rest) pairs
+      `(progn (assert ,test () ,msg)
+              (assert-args ,@rest)))))
+
+(comment
+  (mac (assert-args))
+  (let ((a 1) (b 2))
+    (assert (= a b)
+            (a b)))
+  (mac (assert-args (evenp 3) "3 isn't even"))
+  (assert-args (evenp 2) "2 isn't even"
+               (oddp 2) "2 isn't odd")
+    (assert-args (evenp 2) "2 isn't even"
+                 (oddp 3) "3 isn't odd"))
