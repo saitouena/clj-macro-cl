@@ -87,8 +87,6 @@
 		 nil))))
       t))
 
-(defmacro my-and (&rest exprs))
-
 (comment
   (mac (my-and t t t nil))
   ;; check
@@ -198,3 +196,33 @@
                (oddp 2) "2 isn't odd")
     (assert-args (evenp 2) "2 isn't even"
                  (oddp 3) "3 isn't odd"))
+
+(defmacro if-let (binding then else)
+  (assert-args (= (length binding) 2) "length of binding must be 2")
+  (let ((var (car binding))
+        (expr (cadr binding))
+        (tmp (gensym "tmp")))
+    (assert-args (symbolp var) "var must be symbol")
+    `(let ((,tmp ,expr))
+       (if ,tmp
+           (let ((,var ,tmp))
+             ,then)
+           ,else))))
+
+(commen
+ (if-let (x 1)
+   (+ x 1)
+   100)
+
+ (if-let (x nil)
+   (+ x 1)
+   100)
+
+ ;; error case
+ (if-let (1 nil)
+   (+ 1 1)
+   100)
+
+ (if-let (x 1 2)
+   (+ x 1)
+   100))
