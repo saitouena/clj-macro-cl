@@ -30,10 +30,10 @@
 (defmacro my-cond (&rest clauses)
   (if clauses
       (destructuring-bind ((test . body) . clauses) clauses
-	  `(if ,test
-	       (progn
-		 ,@body)
-	       (my-cond ,@clauses)))
+        `(if ,test
+             (progn
+               ,@body)
+             (my-cond ,@clauses)))
       nil))
 
 (my-cond)
@@ -50,11 +50,11 @@
     `(let ((,cache-sym nil)
 	   (,called?-sym nil))
        (lambda ()
-	 (if ,called?-sym
+         (if ,called?-sym
 	     ,cache-sym
 	     (let ((res ,x))
-	       (setq ,called?-sym t)
-	       (setq ,cache-sym res)
+               (setq ,called?-sym t)
+               (setq ,cache-sym res)
 	       res))))))
 
 (defun force (delayed)
@@ -70,19 +70,7 @@
 					      3))))
     (force print1-and-return-3-delayed)
     (force print1-and-return-3-delayed)
-    (force print1-and-return-3-delayed))
-
-  ;; sketch
-  (let ((x nil)
-	(called? nil))
-    (lambda ()
-      (if called?
-	  x
-	  (let ((res expr))
-	    (setq called? t)
-	    (setq x res)
-	    res))))
-  (force (delay 1)))
+    (force print1-and-return-3-delayed)))
 
 ;; if-not
 (defmacro if-not (test then else)
@@ -98,6 +86,8 @@
 		 (my-and ,@exprs)
 		 nil))))
       t))
+
+(defmacro my-and (&rest exprs))
 
 (comment
   (mac (my-and t t t nil))
@@ -116,6 +106,7 @@
 		 t
 		 (my-or ,@exprs)))))
       t))
+
 
 ;; ->
 (defmacro -> (x &rest forms)
